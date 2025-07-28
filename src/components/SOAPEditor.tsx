@@ -25,8 +25,8 @@ const SOAPEditor = ({
   soapContent,
   onSOAPChange,
   onPrint,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  isGenerating = false,
+  // NOT USED NOW, USED LATER
+  // isGenerating = false,
 }: SOAPEditorProps) => {
   const [isDiagnosisGenerating, setIsDiagnosisGenerating] = useState(false);
   // Parse SOAP content into 4 sections

@@ -70,8 +70,9 @@ Catatan: Pasien dianjurkan untuk menjaga pola tidur dan mengelola stress dengan 
     setStatusMessage(message);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleAudioReady = async (audioBlob: Blob) => {
+  // NOT USED NOW, USED LATER
+  // const handleAudioReady = async (audioBlob: Blob) => {
+  const handleAudioReady = async () => {
     setIsProcessing(true);
     updateStatus("processing", "Memproses audio menjadi teks...");
 

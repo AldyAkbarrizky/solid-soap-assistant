@@ -22,8 +22,8 @@ const ChatTranscript = ({
   onRegenerateSOAP,
   isGenerating,
   originalTranscript = "",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onOriginalTranscriptChange,
+  // NOT USED NOW, USED LATER
+  // onOriginalTranscriptChange,
 }: ChatTranscriptProps) => {
   const [viewMode, setViewMode] = useState<"chat" | "text" | "refined">("chat");
   const [aiRefinementEnabled, setAiRefinementEnabled] = useState(false);
