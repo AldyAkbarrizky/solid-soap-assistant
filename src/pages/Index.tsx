@@ -14,55 +14,60 @@ const Index = () => {
   const [statusMessage, setStatusMessage] = useState(
     "Siap untuk merekam atau mengunggah file audio"
   );
-  const [transcript, setTranscript] =
-    useState(`Dokter: Selamat pagi, Ibu. Silakan duduk. Bagaimana keluhan Anda hari ini?
 
-Pasien: Selamat pagi, Dok. Saya merasa sakit kepala sudah 3 hari ini, dan kadang-kadang merasa mual juga.
+  // BACKUP FOR DATA EXAMPLE AND DATA FORMAT, DO NOT DELETE
 
-Dokter: Sakit kepalanya seperti apa, Bu? Apakah berdenyut atau seperti ditekan?
+  //   const [transcript, setTranscript] =
+  //     useState(`Dokter: Selamat pagi, Ibu. Silakan duduk. Bagaimana keluhan Anda hari ini?
 
-Pasien: Rasanya seperti ditekan, Dok. Terutama di bagian dahi dan belakang kepala. Kadang sampai ke leher juga.
+  // Pasien: Selamat pagi, Dok. Saya merasa sakit kepala sudah 3 hari ini, dan kadang-kadang merasa mual juga.
 
-Dokter: Apakah ada yang memicu sakit kepala ini? Misalnya stress, kurang tidur, atau makanan tertentu?
+  // Dokter: Sakit kepalanya seperti apa, Bu? Apakah berdenyut atau seperti ditekan?
 
-Pasien: Mungkin stress, Dok. Minggu ini saya banyak deadline pekerjaan dan tidur kurang dari 6 jam setiap malam. Kadang sampai begadang.
+  // Pasien: Rasanya seperti ditekan, Dok. Terutama di bagian dahi dan belakang kepala. Kadang sampai ke leher juga.
 
-Dokter: Apakah Ibu pernah mengalami sakit kepala seperti ini sebelumnya?
+  // Dokter: Apakah ada yang memicu sakit kepala ini? Misalnya stress, kurang tidur, atau makanan tertentu?
 
-Pasien: Pernah, Dok. Tapi tidak separah ini. Biasanya kalau capek aja.
+  // Pasien: Mungkin stress, Dok. Minggu ini saya banyak deadline pekerjaan dan tidur kurang dari 6 jam setiap malam. Kadang sampai begadang.
 
-Dokter: Baik, saya akan periksa tekanan darah dan suhu Anda dulu. Kemudian saya akan memberikan obat untuk mengurangi sakit kepala dan saran untuk istirahat yang cukup.
+  // Dokter: Apakah Ibu pernah mengalami sakit kepala seperti ini sebelumnya?
 
-Pasien: Baik, Dok. Terima kasih.`);
-  const [soapContent, setSoapContent] = useState(`S.O.A.P. - CATATAN MEDIS
+  // Pasien: Pernah, Dok. Tapi tidak separah ini. Biasanya kalau capek aja.
 
-SUBJECTIVE (Keluhan Subjektif):
-- Pasien mengeluh sakit kepala sejak 3 hari yang lalu
-- Sakit kepala terasa seperti ditekan, terutama di dahi dan belakang kepala, menjalar ke leher
-- Disertai mual kadang-kadang
-- Pasien mengalami stress dan kurang tidur (< 6 jam/malam) karena deadline pekerjaan, sering begadang
-- Riwayat sakit kepala serupa sebelumnya saat kelelahan, namun tidak separah sekarang
+  // Dokter: Baik, saya akan periksa tekanan darah dan suhu Anda dulu. Kemudian saya akan memberikan obat untuk mengurangi sakit kepala dan saran untuk istirahat yang cukup.
 
-OBJECTIVE (Temuan Objektif):
-- Pemeriksaan fisik akan dilakukan
-- Pemeriksaan tekanan darah dan suhu tubuh
-- Pasien tampak sedikit lelah
-- Belum ada pemeriksaan neurologis detail
+  // Pasien: Baik, Dok. Terima kasih.`);
+  //   const [soapContent, setSoapContent] = useState(`S.O.A.P. - CATATAN MEDIS
 
-ASSESSMENT (Penilaian):
-- Tension headache (sakit kepala tegang) kemungkinan akibat stress dan kurang tidur
-- Perlu evaluasi lebih lanjut untuk menyingkirkan kemungkinan lain
-- Faktor pemicu: stress kerja dan gangguan pola tidur
+  // SUBJECTIVE (Keluhan Subjektif):
+  // - Pasien mengeluh sakit kepala sejak 3 hari yang lalu
+  // - Sakit kepala terasa seperti ditekan, terutama di dahi dan belakang kepala, menjalar ke leher
+  // - Disertai mual kadang-kadang
+  // - Pasien mengalami stress dan kurang tidur (< 6 jam/malam) karena deadline pekerjaan, sering begadang
+  // - Riwayat sakit kepala serupa sebelumnya saat kelelahan, namun tidak separah sekarang
 
-PLAN (Rencana Tindakan):
-1. Pemberian analgesik untuk mengurangi sakit kepala
-2. Edukasi tentang manajemen stress dan sleep hygiene
-3. Anjuran istirahat cukup (7-8 jam/malam)
-4. Hindari begadang dan atur jadwal kerja yang lebih seimbang
-5. Kontrol jika keluhan tidak membaik dalam 3-5 hari
-6. Rujukan ke spesialis neurologi jika diperlukan
+  // OBJECTIVE (Temuan Objektif):
+  // - Pemeriksaan fisik akan dilakukan
+  // - Pemeriksaan tekanan darah dan suhu tubuh
+  // - Pasien tampak sedikit lelah
+  // - Belum ada pemeriksaan neurologis detail
 
-Catatan: Pasien dianjurkan untuk menjaga pola tidur dan mengelola stress dengan baik.`);
+  // ASSESSMENT (Penilaian):
+  // - Tension headache (sakit kepala tegang) kemungkinan akibat stress dan kurang tidur
+  // - Perlu evaluasi lebih lanjut untuk menyingkirkan kemungkinan lain
+  // - Faktor pemicu: stress kerja dan gangguan pola tidur
+
+  // PLAN (Rencana Tindakan):
+  // 1. Pemberian analgesik untuk mengurangi sakit kepala
+  // 2. Edukasi tentang manajemen stress dan sleep hygiene
+  // 3. Anjuran istirahat cukup (7-8 jam/malam)
+  // 4. Hindari begadang dan atur jadwal kerja yang lebih seimbang
+  // 5. Kontrol jika keluhan tidak membaik dalam 3-5 hari
+  // 6. Rujukan ke spesialis neurologi jika diperlukan
+
+  // Catatan: Pasien dianjurkan untuk menjaga pola tidur dan mengelola stress dengan baik.`);
+  const [transcript, setTranscript] = useState("");
+  const [soapContent, setSoapContent] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const updateStatus = (newStatus: StatusType, message: string) => {
@@ -70,84 +75,160 @@ Catatan: Pasien dianjurkan untuk menjaga pola tidur dan mengelola stress dengan 
     setStatusMessage(message);
   };
 
-  // NOT USED NOW, USED LATER
-  // const handleAudioReady = async (audioBlob: Blob) => {
-  const handleAudioReady = async () => {
+  // DO NOT DELETE, BACKUP FOR DATA FORMAT
+  //   const handleAudioReady = async () => {
+  //     setIsProcessing(true);
+  //     updateStatus("processing", "Memproses audio menjadi teks...");
+
+  //     // Simulasi API call untuk Whisper
+  //     setTimeout(() => {
+  //       const mockTranscript = `Dokter: Selamat pagi, Ibu. Bagaimana keluhan Anda hari ini?
+
+  // Pasien: Selamat pagi, Dok. Saya merasa sakit kepala sudah 3 hari ini, dan kadang-kadang merasa mual juga.
+
+  // Dokter: Sakit kepalanya seperti apa? Apakah berdenyut atau seperti ditekan?
+
+  // Pasien: Rasanya seperti ditekan, Dok. Terutama di bagian dahi dan belakang kepala.
+
+  // Dokter: Apakah ada yang memicu sakit kepala ini? Misalnya stress, kurang tidur, atau makanan tertentu?
+
+  // Pasien: Mungkin stress, Dok. Minggu ini saya banyak deadline pekerjaan dan tidur kurang dari 6 jam setiap malam.
+
+  // Dokter: Baik, saya akan periksa tekanan darah dan suhu Anda dulu. Kemudian saya akan memberikan obat untuk mengurangi sakit kepala dan saran untuk istirahat yang cukup.`;
+
+  //       setTranscript(mockTranscript);
+  //       updateStatus("processing", "Membuat catatan S.O.A.P...");
+
+  //       // Simulasi API call untuk GPT
+  //       setTimeout(() => {
+  //         const mockSOAP = `S.O.A.P. - CATATAN MEDIS
+
+  // SUBJECTIVE (Keluhan Subjektif):
+  // - Pasien mengeluh sakit kepala sejak 3 hari yang lalu
+  // - Sakit kepala terasa seperti ditekan, terutama di dahi dan belakang kepala
+  // - Disertai mual kadang-kadang
+  // - Pasien mengalami stress dan kurang tidur (< 6 jam/malam) karena deadline pekerjaan
+
+  // OBJECTIVE (Temuan Objektif):
+  // - Pemeriksaan fisik akan dilakukan
+  // - Pemeriksaan tekanan darah dan suhu tubuh
+  // - Pasien tampak sedikit lelah
+
+  // ASSESSMENT (Penilaian):
+  // - Tension headache (sakit kepala tegang) kemungkinan akibat stress dan kurang tidur
+  // - Perlu evaluasi lebih lanjut untuk menyingkirkan kemungkinan lain
+
+  // PLAN (Rencana Tindakan):
+  // 1. Pemberian analgesik untuk mengurangi sakit kepala
+  // 2. Edukasi tentang manajemen stress
+  // 3. Anjuran istirahat cukup (7-8 jam/malam)
+  // 4. Kontrol jika keluhan tidak membaik dalam 3-5 hari
+  // 5. Hindari pemicu stress berlebihan
+
+  // Catatan: Pasien dianjurkan untuk menjaga pola tidur dan mengelola stress dengan baik.`;
+
+  //         setSoapContent(mockSOAP);
+  //         updateStatus(
+  //           "complete",
+  //           "Proses selesai! Silakan periksa dan edit hasil jika diperlukan."
+  //         );
+  //         setIsProcessing(false);
+
+  //         toast("Transkrip dan catatan S.O.A.P. telah dibuat");
+  //       }, 2000);
+  //     }, 3000);
+  //   };
+
+  const handleAudioReady = async (audioBlob: Blob) => {
     setIsProcessing(true);
-    updateStatus("processing", "Memproses audio menjadi teks...");
+    updateStatus("processing", "Mengunggah audio ke server...");
 
-    // Simulasi API call untuk Whisper
-    setTimeout(() => {
-      const mockTranscript = `Dokter: Selamat pagi, Ibu. Bagaimana keluhan Anda hari ini?
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.wav");
 
-Pasien: Selamat pagi, Dok. Saya merasa sakit kepala sudah 3 hari ini, dan kadang-kadang merasa mual juga.
+    try {
+      const response = await fetch(
+        "http://solid-soap-assistant-be-production.up.railway.app/process-audio",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-Dokter: Sakit kepalanya seperti apa? Apakah berdenyut atau seperti ditekan?
+      const data = await response.json();
 
-Pasien: Rasanya seperti ditekan, Dok. Terutama di bagian dahi dan belakang kepala.
+      if (!response.ok) {
+        throw new Error(data.error || "Terjadi kesalahan pada server");
+      }
 
-Dokter: Apakah ada yang memicu sakit kepala ini? Misalnya stress, kurang tidur, atau makanan tertentu?
+      setTranscript(data.transcript);
+      setSoapContent(data.soapContent);
 
-Pasien: Mungkin stress, Dok. Minggu ini saya banyak deadline pekerjaan dan tidur kurang dari 6 jam setiap malam.
-
-Dokter: Baik, saya akan periksa tekanan darah dan suhu Anda dulu. Kemudian saya akan memberikan obat untuk mengurangi sakit kepala dan saran untuk istirahat yang cukup.`;
-
-      setTranscript(mockTranscript);
-      updateStatus("processing", "Membuat catatan S.O.A.P...");
-
-      // Simulasi API call untuk GPT
-      setTimeout(() => {
-        const mockSOAP = `S.O.A.P. - CATATAN MEDIS
-
-SUBJECTIVE (Keluhan Subjektif):
-- Pasien mengeluh sakit kepala sejak 3 hari yang lalu
-- Sakit kepala terasa seperti ditekan, terutama di dahi dan belakang kepala
-- Disertai mual kadang-kadang
-- Pasien mengalami stress dan kurang tidur (< 6 jam/malam) karena deadline pekerjaan
-
-OBJECTIVE (Temuan Objektif):
-- Pemeriksaan fisik akan dilakukan
-- Pemeriksaan tekanan darah dan suhu tubuh
-- Pasien tampak sedikit lelah
-
-ASSESSMENT (Penilaian):
-- Tension headache (sakit kepala tegang) kemungkinan akibat stress dan kurang tidur
-- Perlu evaluasi lebih lanjut untuk menyingkirkan kemungkinan lain
-
-PLAN (Rencana Tindakan):
-1. Pemberian analgesik untuk mengurangi sakit kepala
-2. Edukasi tentang manajemen stress
-3. Anjuran istirahat cukup (7-8 jam/malam)
-4. Kontrol jika keluhan tidak membaik dalam 3-5 hari
-5. Hindari pemicu stress berlebihan
-
-Catatan: Pasien dianjurkan untuk menjaga pola tidur dan mengelola stress dengan baik.`;
-
-        setSoapContent(mockSOAP);
-        updateStatus(
-          "complete",
-          "Proses selesai! Silakan periksa dan edit hasil jika diperlukan."
-        );
-        setIsProcessing(false);
-
-        toast("Transkrip dan catatan S.O.A.P. telah dibuat");
-      }, 2000);
-    }, 3000);
+      updateStatus(
+        "complete",
+        "Proses selesai! Silakan periksa dan edit hasil jika diperlukan."
+      );
+      toast.success("Transkrip dan catatan S.O.A.P. berhasil dibuat!");
+    } catch (error) {
+      console.error("Error processing audio:", error);
+      const errorMessage = (error as Error).message;
+      updateStatus("error", `Gagal memproses: ${errorMessage}`);
+      toast.error(`Gagal memproses: ${errorMessage}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleRegenerateSOAP = () => {
+  const handleRegenerateSOAP = async () => {
     if (!transcript.trim()) return;
 
     setIsProcessing(true);
     updateStatus("processing", "Membuat ulang catatan S.O.A.P...");
 
-    // Simulasi regenerate SOAP
-    setTimeout(() => {
-      updateStatus("complete", "S.O.A.P. berhasil dibuat ulang!");
-      setIsProcessing(false);
+    // // Simulasi regenerate SOAP
+    // setTimeout(() => {
+    //   updateStatus("complete", "S.O.A.P. berhasil dibuat ulang!");
+    //   setIsProcessing(false);
 
-      toast("Catatan berhasil dibuat ulang berdasarkan transkrip yang diedit");
-    }, 2000);
+    //   toast("Catatan berhasil dibuat ulang berdasarkan transkrip yang diedit");
+    // }, 2000);
+
+    try {
+      const ollamaUrl = "http://localhost:11434/api/generate";
+      const prompt = `... (gunakan prompt yang sama seperti di backend) ...
+                      ---
+                      **Transkrip Percakapan:**
+                      ${transcript}
+                      ---
+                      **Hasil S.O.A.P.:**
+                      `;
+
+      const payload = {
+        model: "hf.co/gmonsoon/gemma2-9b-cpt-sahabatai-v1-instruct-GGUF:Q4_K_M",
+        prompt,
+        stream: false,
+      };
+      const response = await fetch(ollamaUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Gagal generate SOAP");
+
+      setSoapContent(data.response.trim());
+      updateStatus("complete", "S.O.A.P. berhasil dibuat ulang!");
+      toast.success(
+        "Catatan berhasil dibuat ulang berdasarkan transkrip yang diedit"
+      );
+    } catch (error) {
+      console.error("Error regenerating SOAP:", error);
+      const errorMessage = (error as Error).message;
+      updateStatus("error", `Gagal generate ulang: ${errorMessage}`);
+      toast.error(`Gagal generate ulang: ${errorMessage}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handlePrint = () => {

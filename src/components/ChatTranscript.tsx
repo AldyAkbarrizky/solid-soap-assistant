@@ -1,3 +1,6 @@
+// ChatTranscript.tsx
+// Area konten utama sekarang menampilkan status loading.
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,8 +15,8 @@ interface ChatTranscriptProps {
   onTranscriptChange: (value: string) => void;
   onRegenerateSOAP: () => void;
   isGenerating: boolean;
+  // Prop untuk menyimpan transkrip asli sebelum di-refine
   originalTranscript?: string;
-  onOriginalTranscriptChange?: (value: string) => void;
 }
 
 const ChatTranscript = ({
@@ -21,16 +24,16 @@ const ChatTranscript = ({
   onTranscriptChange,
   onRegenerateSOAP,
   isGenerating,
-  originalTranscript = "",
-  // NOT USED NOW, USED LATER
-  // onOriginalTranscriptChange,
+  originalTranscript = transcript, // Gunakan transkrip saat ini sebagai default
 }: ChatTranscriptProps) => {
+  // Mengembalikan viewMode dengan tiga opsi
   const [viewMode, setViewMode] = useState<"chat" | "text" | "refined">("chat");
   const [aiRefinementEnabled, setAiRefinementEnabled] = useState(false);
   const [isRefining, setIsRefining] = useState(false);
+  // State terpisah untuk hasil refine, agar tidak mengganggu transkrip utama
   const [refinedTranscript, setRefinedTranscript] = useState("");
 
-  // Parse transcript into chat messages
+  // Fungsi untuk mem-parse transkrip menjadi format chat
   const parseTranscript = (text: string) => {
     if (!text.trim()) return [];
 
@@ -50,7 +53,6 @@ const ChatTranscript = ({
           message: trimmedLine.substring(7).trim(),
         });
       } else if (messages.length > 0) {
-        // Continuation of previous message
         messages[messages.length - 1].message += "\n" + trimmedLine;
       }
     });
@@ -58,29 +60,27 @@ const ChatTranscript = ({
     return messages;
   };
 
+  // Chat messages selalu di-generate dari prop 'transcript'
   const chatMessages = parseTranscript(transcript);
 
-  // Function to refine transcript with AI
+  // Fungsi untuk me-refine transkrip (simulasi)
   const refineTranscriptWithAI = async () => {
     if (!originalTranscript.trim()) return;
 
     setIsRefining(true);
+    // Di aplikasi nyata, Anda akan memanggil backend di sini
+    // await fetch('http://localhost:5001/refine-transcript', ...)
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulasi delay
 
-    // Simulate AI refinement API call
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    // Mock AI refinement - in real app this would call AI API
-    const refined = originalTranscript
-      .replace(/um\.\.\./g, "")
-      .replace(/eh\.\.\./g, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .join("\n");
+    // Contoh hasil refine
+    const refined = `Dokter: Selamat pagi Ibu, silakan duduk. Apa keluhan Anda hari ini?
+Pasien: Selamat pagi Dok. Saya sakit kepala sudah tiga hari, kadang mual juga.
+Dokter: Sakit kepalanya seperti apa? Berdenyut atau ditekan?
+Pasien: Rasanya seperti ditekan, Dok. Terutama di dahi dan belakang kepala.`;
 
     setRefinedTranscript(refined);
+
+    // Jika checkbox aktif, langsung update transkrip utama dengan hasil refine
     if (aiRefinementEnabled) {
       onTranscriptChange(refined);
     }
@@ -89,7 +89,7 @@ const ChatTranscript = ({
 
   return (
     <div className="flex flex-col h-full">
-      {/* AI Refinement Checkbox */}
+      {/* Bagian AI Refinement */}
       <div className="flex items-center space-x-2 mb-3 p-3 bg-muted/30 rounded-lg border border-border">
         <Checkbox
           id="ai-refinement"
@@ -97,83 +97,84 @@ const ChatTranscript = ({
           onCheckedChange={(checked) =>
             setAiRefinementEnabled(checked as boolean)
           }
+          disabled={isGenerating} // Dinonaktifkan selama proses utama
         />
         <Label
           htmlFor="ai-refinement"
-          className="text-sm font-medium cursor-pointer"
+          className={cn(
+            "text-sm font-medium cursor-pointer",
+            isGenerating && "text-muted-foreground"
+          )}
         >
           Gunakan AI untuk memperbaiki kualitas transkrip
         </Label>
-        {aiRefinementEnabled && originalTranscript && (
-          <Button
-            onClick={refineTranscriptWithAI}
-            disabled={isRefining}
-            variant="outline"
-            size="sm"
-            className="ml-auto h-7 px-2 text-xs"
-          >
-            <Sparkles
-              className={cn("w-3 h-3 mr-1", isRefining && "animate-spin")}
-            />
-            {isRefining ? "Processing..." : "Refine"}
-          </Button>
-        )}
+        <Button
+          onClick={refineTranscriptWithAI}
+          disabled={isRefining || isGenerating || !transcript} // Dinonaktifkan selama proses utama
+          variant="outline"
+          size="sm"
+          className="ml-auto h-7 px-2 text-xs"
+        >
+          <Sparkles
+            className={cn(
+              "w-3 h-3 mr-1",
+              (isRefining || isGenerating) && "animate-spin"
+            )}
+          />
+          {isRefining || isGenerating ? "Memproses..." : "Refine"}
+        </Button>
       </div>
 
-      {/* Header - Fixed */}
+      {/* Header dengan 3 tombol view */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 className="text-xl font-semibold text-foreground">
           Transkrip Percakapan
         </h2>
-        <div className="flex items-center gap-2">
-          <div className="text-sm text-muted-foreground">
-            {transcript.length} karakter
-          </div>
-          <div className="flex bg-background rounded-lg p-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setViewMode("chat")}
-              className={cn(
-                "h-8 px-3 text-xs cursor-pointer",
-                viewMode === "chat" && "bg-card shadow-sm"
-              )}
-            >
-              <MessageSquare className="w-3 h-3 mr-1" />
-              Chat
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setViewMode("text")}
-              className={cn(
-                "h-8 px-3 text-xs cursor-pointer",
-                viewMode === "text" && "bg-card shadow-sm"
-              )}
-            >
-              <Edit3 className="w-3 h-3 mr-1" />
-              Edit
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setViewMode("refined")}
-              className={cn(
-                "h-8 px-3 text-xs cursor-pointer",
-                viewMode === "refined" && "bg-card shadow-sm"
-              )}
-            >
-              <Sparkles className="w-3 h-3 mr-1" />
-              AI Refined
-            </Button>
-          </div>
+        <div className="flex bg-muted rounded-lg p-1 border">
+          <Button
+            variant={viewMode === "chat" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("chat")}
+            className="h-8 px-3 text-xs"
+          >
+            <MessageSquare className="w-3 h-3 mr-1.5" /> Chat
+          </Button>
+          <Button
+            variant={viewMode === "text" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("text")}
+            className="h-8 px-3 text-xs"
+          >
+            <Edit3 className="w-3 h-3 mr-1.5" /> Edit
+          </Button>
+          <Button
+            variant={viewMode === "refined" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("refined")}
+            className="h-8 px-3 text-xs"
+          >
+            <Sparkles className="w-3 h-3 mr-1.5" /> AI Refined
+          </Button>
         </div>
       </div>
 
-      {/* Content Area - Flexible */}
-      <div className="flex-1 min-h-0 flex flex-col h-full">
+      {/* Area Konten */}
+      <div className="flex-1 min-h-0 relative">
+        {/* --- PERBAIKAN DI SINI: Overlay Loading --- */}
+        {isGenerating && (
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-lg">
+            <RefreshCw className="w-8 h-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground font-medium">
+              Memproses audio & transkrip...
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Harap tunggu sebentar.
+            </p>
+          </div>
+        )}
+
         {viewMode === "chat" ? (
-          <div className="flex-1 overflow-y-auto p-4 bg-muted/30 rounded-lg border border-border">
+          <div className="h-full overflow-y-auto p-4 bg-muted/50 rounded-lg border">
             {chatMessages.length > 0 ? (
               <div className="space-y-2">
                 {chatMessages.map((msg, index) => (
@@ -185,11 +186,10 @@ const ChatTranscript = ({
                 ))}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-40 text-muted-foreground">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>Transkrip percakapan akan muncul di sini</p>
-                  <p className="text-xs mt-1">dalam format chat bubble</p>
+                  <p>Transkrip akan muncul di sini</p>
                 </div>
               </div>
             )}
@@ -198,53 +198,36 @@ const ChatTranscript = ({
           <Textarea
             value={transcript}
             onChange={(e) => onTranscriptChange(e.target.value)}
-            placeholder="Transkrip percakapan akan muncul di sini. Format:
-Dokter: Selamat pagi, bagaimana kabar Anda?
-Pasien: Saya merasa sakit kepala, Dok.
-Dokter: Sudah berapa lama sakit kepalanya?"
-            className={cn(
-              "flex-1 resize-none font-mono text-sm",
-              "border-border focus:border-primary focus:ring-primary",
-              "transition-all duration-300"
-            )}
+            placeholder="Transkrip percakapan..."
+            className="h-full w-full resize-none font-mono text-sm"
           />
         ) : (
+          // viewMode === "refined"
           <Textarea
             value={
               isRefining
-                ? "Sedang memproses dan memperbaiki transkrip dengan AI, harap tunggu..."
+                ? "Sedang memproses dan memperbaiki transkrip dengan AI..."
                 : refinedTranscript
             }
-            onChange={(e) =>
-              !isRefining && setRefinedTranscript(e.target.value)
-            }
-            placeholder="Transkrip yang telah diperbaiki oleh AI akan muncul di sini..."
-            className={cn(
-              "flex-1 resize-none font-mono text-sm",
-              "border-green-600/20 focus:border-green-600 focus:ring-green-600/20",
-              "transition-all duration-300",
-              isRefining && "text-muted-foreground"
-            )}
-            disabled={isRefining}
+            readOnly
+            placeholder="Hasil transkrip yang telah diperbaiki oleh AI akan muncul di sini..."
+            className="h-full w-full resize-none font-mono text-sm bg-muted/50"
           />
         )}
-
-        {/* Button - Fixed at bottom */}
-        <Button
-          onClick={onRegenerateSOAP}
-          disabled={!transcript.trim() || isGenerating}
-          variant="medical"
-          className={cn(
-            "w-full h-12 mt-4 flex-shrink-0",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
-          )}
-        >
-          <RefreshCw
-            className={cn("w-5 h-5 mr-2", isGenerating && "animate-spin")}
-          />
-          {isGenerating ? "Sedang Memproses..." : "Generate Ulang S.O.A.P."}
-        </Button>
       </div>
+
+      {/* Tombol Generate Ulang */}
+      <Button
+        onClick={onRegenerateSOAP}
+        disabled={!transcript.trim() || isGenerating}
+        variant="medical"
+        className="w-full h-12 mt-4 flex-shrink-0"
+      >
+        <RefreshCw
+          className={cn("w-5 h-5 mr-2", isGenerating && "animate-spin")}
+        />
+        {isGenerating ? "Sedang Memproses..." : "Generate Ulang S.O.A.P."}
+      </Button>
     </div>
   );
 };
