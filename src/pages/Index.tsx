@@ -148,7 +148,7 @@ const Index = () => {
 
     try {
       const response = await fetch(
-        "http://solid-soap-assistant-be-production.up.railway.app/process-audio",
+        "https://solid-soap-assistant-be-production.up.railway.app/process-audio",
         {
           method: "POST",
           body: formData,
