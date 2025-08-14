@@ -73,6 +73,7 @@ const AudioRecorder = ({ onAudioReady, isProcessing }: AudioRecorderProps) => {
       } else {
         toast.error("Silakan pilih file audio yang valid");
       }
+      event.target.value = "";
     }
   };
 

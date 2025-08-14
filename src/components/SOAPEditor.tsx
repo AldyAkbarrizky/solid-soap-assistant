@@ -1,15 +1,16 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { FileText, Printer, Sparkles } from "lucide-react";
+import { FileText, Printer, RefreshCw, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SOAPEditorProps {
   soapContent: string;
   onSOAPChange: (value: string) => void;
+  onRegenerateDiagnose: () => void;
   onPrint: () => void;
   isGenerating?: boolean;
+  isGeneratingDiagnose?: boolean;
 }
 
 interface SOAPData {
@@ -24,12 +25,11 @@ interface SOAPData {
 const SOAPEditor = ({
   soapContent,
   onSOAPChange,
+  onRegenerateDiagnose,
   onPrint,
-  // NOT USED NOW, USED LATER
-  // isGenerating = false,
+  isGenerating = false,
+  isGeneratingDiagnose = false,
 }: SOAPEditorProps) => {
-  const [isDiagnosisGenerating, setIsDiagnosisGenerating] = useState(false);
-  // Parse SOAP content into 4 sections
   const parseSOAP = (content: string): SOAPData => {
     const defaultData: SOAPData = {
       subjective: "",
@@ -105,73 +105,6 @@ ${data.icd10}`;
     return total.split(/\s+/).filter((word) => word.length > 0).length;
   };
 
-  // Generate diagnosis and ICD-10 based on SOAP content
-  const generateDiagnosisAndICD = async () => {
-    setIsDiagnosisGenerating(true);
-
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Mock data - in real app this would call AI API
-    const mockDiagnoses = [
-      {
-        diagnosis: "Infeksi Saluran Pernapasan Atas (ISPA) - Common Cold",
-        icd10: "J00 - Acute nasopharyngitis [common cold]",
-      },
-      {
-        diagnosis: "Gastritis Akut",
-        icd10: "K29.0 - Acute gastritis",
-      },
-      {
-        diagnosis: "Hipertensi Esensial",
-        icd10: "I10 - Essential hypertension",
-      },
-      {
-        diagnosis: "Diabetes Mellitus Type 2",
-        icd10: "E11.9 - Type 2 diabetes mellitus without complications",
-      },
-    ];
-
-    // Simple logic based on SOAP content keywords
-    const combinedText = (
-      soapData.subjective +
-      " " +
-      soapData.objective +
-      " " +
-      soapData.assessment
-    ).toLowerCase();
-
-    let selectedDiagnosis = mockDiagnoses[0]; // default
-
-    if (
-      combinedText.includes("sakit perut") ||
-      combinedText.includes("mual") ||
-      combinedText.includes("gastritis")
-    ) {
-      selectedDiagnosis = mockDiagnoses[1];
-    } else if (
-      combinedText.includes("tekanan darah") ||
-      combinedText.includes("hipertensi") ||
-      combinedText.includes("tensi")
-    ) {
-      selectedDiagnosis = mockDiagnoses[2];
-    } else if (
-      combinedText.includes("diabetes") ||
-      combinedText.includes("gula darah") ||
-      combinedText.includes("dm")
-    ) {
-      selectedDiagnosis = mockDiagnoses[3];
-    }
-
-    const newData = {
-      ...soapData,
-      diagnosis: selectedDiagnosis.diagnosis,
-      icd10: selectedDiagnosis.icd10,
-    };
-    onSOAPChange(combineSOAP(newData));
-    setIsDiagnosisGenerating(false);
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -182,192 +115,205 @@ ${data.icd10}`;
           {getTotalWords()} kata total
         </div>
       </div>
-
-      {/* Subjective Section */}
-      <div className="space-y-2">
-        <Label
-          htmlFor="subjective"
-          className="text-sm font-medium text-primary"
-        >
-          S - SUBJECTIVE (Keluhan Subjektif)
-        </Label>
-        <Textarea
-          id="subjective"
-          value={soapData.subjective}
-          onChange={(e) => updateSOAPSection("subjective", e.target.value)}
-          placeholder="Keluhan pasien, gejala yang dirasakan, riwayat penyakit..."
-          className={cn(
-            "min-h-[100px] resize-none text-sm",
-            "border-primary/20 focus:border-primary focus:ring-primary/20",
-            "transition-all duration-300"
-          )}
-        />
-      </div>
-
-      {/* Objective Section */}
-      <div className="space-y-2">
-        <Label
-          htmlFor="objective"
-          className="text-sm font-medium text-medical-blue"
-        >
-          O - OBJECTIVE (Temuan Objektif)
-        </Label>
-        <Textarea
-          id="objective"
-          value={soapData.objective}
-          onChange={(e) => updateSOAPSection("objective", e.target.value)}
-          placeholder="Hasil pemeriksaan fisik, vital signs, hasil lab..."
-          className={cn(
-            "min-h-[100px] resize-none text-sm",
-            "border-medical-blue/20 focus:border-medical-blue focus:ring-medical-blue/20",
-            "transition-all duration-300"
-          )}
-        />
-      </div>
-
-      {/* Assessment Section */}
-      <div className="space-y-2">
-        <Label
-          htmlFor="assessment"
-          className="text-sm font-medium text-warning"
-        >
-          A - ASSESSMENT (Penilaian)
-        </Label>
-        <Textarea
-          id="assessment"
-          value={soapData.assessment}
-          onChange={(e) => updateSOAPSection("assessment", e.target.value)}
-          placeholder="Diagnosis, penilaian klinis, diagnosis banding..."
-          className={cn(
-            "min-h-[100px] resize-none text-sm",
-            "border-warning/20 focus:border-warning focus:ring-warning/20",
-            "transition-all duration-300"
-          )}
-        />
-      </div>
-
-      {/* Plan Section */}
-      <div className="space-y-2">
-        <Label
-          htmlFor="plan"
-          className="text-sm font-medium text-medical-green"
-        >
-          P - PLAN (Rencana Tindakan)
-        </Label>
-        <Textarea
-          id="plan"
-          value={soapData.plan}
-          onChange={(e) => updateSOAPSection("plan", e.target.value)}
-          placeholder="Rencana pengobatan, tindakan, edukasi pasien, kontrol..."
-          className={cn(
-            "min-h-[100px] resize-none text-sm",
-            "border-medical-green/20 focus:border-medical-green focus:ring-medical-green/20",
-            "transition-all duration-300"
-          )}
-        />
-      </div>
-
-      {/* Diagnosis Section */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
+      <div className="flex-1 min-h-0 relative space-y-6">
+        {isGenerating && (
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-lg">
+            <RefreshCw className="w-8 h-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground font-medium">
+              Generate Hasil S.O.A.P & Diagnosis ICD-10...
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Harap tunggu sebentar.
+            </p>
+          </div>
+        )}
+        {/* Subjective Section */}
+        <div className="space-y-2">
           <Label
-            htmlFor="diagnosis"
-            className="text-sm font-medium text-purple-600"
+            htmlFor="subjective"
+            className="text-sm font-medium text-primary"
           >
-            DIAGNOSIS (Kesimpulan Diagnosa)
+            S - SUBJECTIVE (Keluhan Subjektif)
           </Label>
-          <Button
-            onClick={generateDiagnosisAndICD}
-            disabled={
-              (!soapData.subjective.trim() &&
-                !soapData.objective.trim() &&
-                !soapData.assessment.trim()) ||
-              isDiagnosisGenerating
-            }
-            variant="outline"
-            size="sm"
-            className="h-7 px-2 text-xs border-purple-600/20 text-purple-600 hover:bg-purple-600/10"
-          >
-            <Sparkles
-              className={cn(
-                "w-3 h-3 mr-1",
-                isDiagnosisGenerating && "animate-spin"
-              )}
-            />
-            {isDiagnosisGenerating ? "Loading..." : "Generate"}
-          </Button>
+          <Textarea
+            id="subjective"
+            value={soapData.subjective}
+            onChange={(e) => updateSOAPSection("subjective", e.target.value)}
+            placeholder="Keluhan pasien, gejala yang dirasakan, riwayat penyakit..."
+            className={cn(
+              "min-h-[150px] resize-none text-sm",
+              "border-primary/20 focus:border-primary focus:ring-primary/20",
+              "transition-all duration-300"
+            )}
+          />
         </div>
-        <Textarea
-          id="diagnosis"
-          value={
-            isDiagnosisGenerating
-              ? "Mengenerate ulang diagnosa, harap tunggu..."
-              : soapData.diagnosis
-          }
-          onChange={(e) =>
-            !isDiagnosisGenerating &&
-            updateSOAPSection("diagnosis", e.target.value)
-          }
-          placeholder="Kesimpulan diagnosis berdasarkan S.O.A.P..."
-          className={cn(
-            "min-h-[80px] resize-none text-sm",
-            "border-purple-600/20 focus:border-purple-600 focus:ring-purple-600/20",
-            "transition-all duration-300",
-            isDiagnosisGenerating && "text-muted-foreground"
-          )}
-          disabled={isDiagnosisGenerating}
-        />
-      </div>
 
-      {/* ICD-10 Section */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        {/* Objective Section */}
+        <div className="space-y-2">
           <Label
-            htmlFor="icd10"
-            className="text-sm font-medium text-orange-600"
+            htmlFor="objective"
+            className="text-sm font-medium text-medical-red"
           >
-            ICD-10 (Kode ICD-10)
+            O - OBJECTIVE (Temuan Objektif)
           </Label>
-          <Button
-            onClick={generateDiagnosisAndICD}
-            disabled={
-              (!soapData.subjective.trim() &&
-                !soapData.objective.trim() &&
-                !soapData.assessment.trim()) ||
-              isDiagnosisGenerating
-            }
-            variant="outline"
-            size="sm"
-            className="h-7 px-2 text-xs border-orange-600/20 text-orange-600 hover:bg-orange-600/10"
-          >
-            <Sparkles
-              className={cn(
-                "w-3 h-3 mr-1",
-                isDiagnosisGenerating && "animate-spin"
-              )}
-            />
-            {isDiagnosisGenerating ? "Loading..." : "Generate"}
-          </Button>
+          <Textarea
+            id="objective"
+            value={soapData.objective}
+            onChange={(e) => updateSOAPSection("objective", e.target.value)}
+            placeholder="Hasil pemeriksaan fisik, vital signs, hasil lab..."
+            className={cn(
+              "min-h-[150px] resize-none text-sm",
+              "border-medical-blue/20 focus:border-medical-blue focus:ring-medical-blue/20",
+              "transition-all duration-300"
+            )}
+          />
         </div>
-        <Textarea
-          id="icd10"
-          value={
-            isDiagnosisGenerating
-              ? "Mengenerate ulang kode ICD-10, harap tunggu..."
-              : soapData.icd10
-          }
-          onChange={(e) =>
-            !isDiagnosisGenerating && updateSOAPSection("icd10", e.target.value)
-          }
-          placeholder="Kode ICD-10 sesuai diagnosis (misal: J00 - Common cold)"
-          className={cn(
-            "min-h-[60px] resize-none text-sm",
-            "border-orange-600/20 focus:border-orange-600 focus:ring-orange-600/20",
-            "transition-all duration-300",
-            isDiagnosisGenerating && "text-muted-foreground"
-          )}
-          disabled={isDiagnosisGenerating}
-        />
+
+        {/* Assessment Section */}
+        <div className="space-y-2">
+          <Label
+            htmlFor="assessment"
+            className="text-sm font-medium text-warning"
+          >
+            A - ASSESSMENT (Penilaian)
+          </Label>
+          <Textarea
+            id="assessment"
+            value={soapData.assessment}
+            onChange={(e) => updateSOAPSection("assessment", e.target.value)}
+            placeholder="Diagnosis, penilaian klinis, diagnosis banding..."
+            className={cn(
+              "min-h-[150px] resize-none text-sm",
+              "border-warning/20 focus:border-warning focus:ring-warning/20",
+              "transition-all duration-300"
+            )}
+          />
+        </div>
+
+        {/* Plan Section */}
+        <div className="space-y-2">
+          <Label
+            htmlFor="plan"
+            className="text-sm font-medium text-medical-green"
+          >
+            P - PLAN (Rencana Tindakan)
+          </Label>
+          <Textarea
+            id="plan"
+            value={soapData.plan}
+            onChange={(e) => updateSOAPSection("plan", e.target.value)}
+            placeholder="Rencana pengobatan, tindakan, edukasi pasien, kontrol..."
+            className={cn(
+              "min-h-[150px] resize-none text-sm",
+              "border-medical-green/20 focus:border-medical-green focus:ring-medical-green/20",
+              "transition-all duration-300"
+            )}
+          />
+        </div>
+
+        {/* Diagnosis Section */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label
+              htmlFor="diagnosis"
+              className="text-sm font-medium text-purple-600"
+            >
+              DIAGNOSIS (Kesimpulan Diagnosa)
+            </Label>
+            <Button
+              onClick={onRegenerateDiagnose}
+              disabled={
+                (!soapData.subjective.trim() &&
+                  !soapData.objective.trim() &&
+                  !soapData.assessment.trim()) ||
+                isGeneratingDiagnose
+              }
+              variant="outline"
+              size="sm"
+              className="h-7 px-2 text-xs border-purple-600/20 text-purple-600 hover:bg-purple-600/10"
+            >
+              <Sparkles
+                className={cn(
+                  "w-3 h-3 mr-1",
+                  isGeneratingDiagnose && "animate-spin"
+                )}
+              />
+              {isGeneratingDiagnose ? "Loading..." : "Generate"}
+            </Button>
+          </div>
+          <Textarea
+            id="diagnosis"
+            value={
+              isGeneratingDiagnose
+                ? "Mengenerate ulang diagnosa, harap tunggu..."
+                : soapData.diagnosis
+            }
+            onChange={(e) =>
+              !isGeneratingDiagnose &&
+              updateSOAPSection("diagnosis", e.target.value)
+            }
+            placeholder="Kesimpulan diagnosis berdasarkan S.O.A.P..."
+            className={cn(
+              "min-h-[150px] resize-none text-sm",
+              "border-purple-600/20 focus:border-purple-600 focus:ring-purple-600/20",
+              "transition-all duration-300",
+              isGeneratingDiagnose && "text-muted-foreground"
+            )}
+            disabled={isGeneratingDiagnose}
+          />
+        </div>
+
+        {/* ICD-10 Section */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label
+              htmlFor="icd10"
+              className="text-sm font-medium text-orange-600"
+            >
+              ICD-10 (Kode ICD-10)
+            </Label>
+            <Button
+              onClick={onRegenerateDiagnose}
+              disabled={
+                (!soapData.subjective.trim() &&
+                  !soapData.objective.trim() &&
+                  !soapData.assessment.trim()) ||
+                isGeneratingDiagnose
+              }
+              variant="outline"
+              size="sm"
+              className="h-7 px-2 text-xs border-orange-600/20 text-orange-600 hover:bg-orange-600/10"
+            >
+              <Sparkles
+                className={cn(
+                  "w-3 h-3 mr-1",
+                  isGeneratingDiagnose && "animate-spin"
+                )}
+              />
+              {isGeneratingDiagnose ? "Loading..." : "Generate"}
+            </Button>
+          </div>
+          <Textarea
+            id="icd10"
+            value={
+              isGeneratingDiagnose
+                ? "Mengenerate ulang kode ICD-10, harap tunggu..."
+                : soapData.icd10
+            }
+            onChange={(e) =>
+              !isGeneratingDiagnose &&
+              updateSOAPSection("icd10", e.target.value)
+            }
+            placeholder="Kode ICD-10 sesuai diagnosis (misal: J00 - Common cold)"
+            className={cn(
+              "min-h-[150px] resize-none text-sm",
+              "border-orange-600/20 focus:border-orange-600 focus:ring-orange-600/20",
+              "transition-all duration-300",
+              isGeneratingDiagnose && "text-muted-foreground"
+            )}
+            disabled={isGeneratingDiagnose}
+          />
+        </div>
       </div>
 
       <Button
@@ -379,8 +325,10 @@ ${data.icd10}`;
           "disabled:opacity-50 disabled:cursor-not-allowed"
         )}
       >
-        <Printer className="w-5 h-5 mr-2" />
-        Cetak / Simpan sebagai PDF
+        <Printer
+          className={cn("w-5 h-5 mr-2", isGenerating && "animate-spin")}
+        />
+        {isGenerating ? "Sedang Memproses..." : "Cetak / Simpan sebagai PDF"}
       </Button>
 
       {soapContent.trim() && (
